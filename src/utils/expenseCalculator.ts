@@ -71,3 +71,13 @@ export function getMonthlyExpense(expenses, targetDate = new Date()) {
     }),
   };
 }
+
+export function getCategoryExpense(expenses, category) {
+  const categoryExpenses = expenses.filter(
+    (expense) => expense.category === category
+  );
+  return {
+    total: categoryExpenses.reduce((sum, expense) => sum + expense.amount, 0),
+    expenses: categoryExpenses,
+  };
+}

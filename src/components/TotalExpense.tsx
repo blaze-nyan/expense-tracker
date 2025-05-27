@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Skeleton from "@mui/material/Skeleton";
 import {
+  getCategoryExpense,
   getDailyExpense,
   getMonthlyExpense,
   getWeeklyExpense,
@@ -12,6 +13,7 @@ import Button from "@mui/material/Button";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import PopupState, { bindTrigger, bindMenu } from "material-ui-popup-state";
+import ExpensePieChart from "./ExpensePiechart";
 interface Expense {
   _id: string;
   userId: string;
@@ -40,6 +42,13 @@ const ExpenseList = () => {
     startDate: string;
     endDate: string;
   }>({ total: 0, expenses: [], startDate: "", endDate: "" });
+  const [categoryExpense, setCategoryExpense] = useState<{
+    food: number;
+    transport: number;
+    health: number;
+    education: number;
+    household: number;
+  }>({ food: 0, transport: 0, health: 0, education: 0, household: 0 });
   const [buttonText, setButtonText] = useState("Daily");
   function handleClick(text, popState) {
     setButtonText(text);
@@ -58,9 +67,19 @@ const ExpenseList = () => {
         const total = getDailyExpense(data.expenses);
         const weeklyTotal = getWeeklyExpense(data.expenses);
         const monthlyTotal = getMonthlyExpense(data.expenses);
+        const categoryTotal = {
+          food: getCategoryExpense(data.expenses, "food").total,
+          transport: getCategoryExpense(data.expenses, "transport").total,
+          health: getCategoryExpense(data.expenses, "health").total,
+          education: getCategoryExpense(data.expenses, "education").total,
+          household: getCategoryExpense(data.expenses, "household").total,
+        };
+        console.log(getCategoryExpense(data.expenses, "food").total);
+        console.log(categoryTotal);
+        setCategoryExpense(categoryTotal);
+
         setWeeklyExpense(weeklyTotal);
         setMonthlyExpense(monthlyTotal);
-        console.log("Result of getDailyExpense:", total);
         setTotalExpense(total);
       } catch (error) {
         console.error("Error fetching expenses:", error);
@@ -112,6 +131,7 @@ const ExpenseList = () => {
           </React.Fragment>
         )}
       </PopupState>
+      <ExpensePieChart categoryExpense={categoryExpense} />
     </div>
   );
 };
